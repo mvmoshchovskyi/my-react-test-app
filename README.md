@@ -1,32 +1,19 @@
-# React + TypeScript + Vite
+## React Todo List
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+The goal of this exercise is to create a working todo list with persistent data storage.
 
-Currently, two official plugins are available:
+To start with, we have a styled todo list that supports adding todos. We also have premade styles for completed todo items. Although there's no working mechanism for "completing" a todo.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Requirements
 
-## React Compiler
+1. Clicking on a todo item should toggle the "checked" state.
+2. The todo list state should be saved and loaded from local storage.
+3. Checked items should sink to the bottom of the list automatically
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Stretch Goals
 
-## Expanding the Oxlint configuration
+1. Allow todos to be deleted. When you hover your mouse over a todo, an X should appear on the far right side, clicking the X should remove it from the list.
+2. Add hidden timestamps to todos (created_at, completed_at), these will be used for sorting
+  - The active todos should be sorted by created_at descending
+  - The completed todos should be sorted by completed_at ascending
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
-
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
