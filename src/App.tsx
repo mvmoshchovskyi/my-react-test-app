@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { v4 as uuid } from "uuid";
 import Header from "./components/Header";
 import { TodoList } from "./components/TodoList";
@@ -46,9 +46,16 @@ const initialData: Todo[] = [
   },
 ];
 function App() {
-  const [todos, setTodos] = useState<Todo[]>(initialData);
+  const [todos, setTodos] = useState<Todo[]>(() => {
+    const saved = localStorage.getItem("todos");
+    return saved ? JSON.parse(saved) : initialData;
+  });
 
-  const addTodo = (label: string) => {
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
+
+  const addTodo = useCallback((label: string) => {
     const newTodo = {
       id: uuid(),
       label,
@@ -58,7 +65,21 @@ function App() {
     };
 
     setTodos((prev) => [newTodo, ...prev]);
-  };
+  }, []);
+
+  const handleChecked = useCallback((checked: boolean, id: string) => {
+    setTodos((prev) =>
+      prev.map((todo) =>
+        todo.id === id
+          ? { ...todo, checked, completed_at: checked ? Date.now() : null }
+          : todo,
+      ),
+    );
+
+    setTodos((prev) =>
+      [...prev].sort((a, b) => Number(a.checked) - Number(b.checked)),
+    );
+  }, []);
 
   return (
     <>
@@ -67,7 +88,7 @@ function App() {
         <AddInput onAdd={addTodo} />
         <TodoList>
           {todos.map((todo) => (
-            <TodoItem key={todo.id} {...todo} />
+            <TodoItem key={todo.id} {...todo} onChecked={handleChecked} />
           ))}
         </TodoList>
       </Wrapper>
