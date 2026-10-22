@@ -15,6 +15,11 @@ const Wrapper = styled.div({
   padding: "24px",
 });
 
+const Text = styled.p({
+  color: "red",
+  textAlign: "center",
+});
+
 /**
  * This is the initial todo state.
  * Instead of loading this data on every reload,
@@ -47,8 +52,13 @@ const initialData: Todo[] = [
 ];
 function App() {
   const [todos, setTodos] = useState<Todo[]>(() => {
-    const saved = localStorage.getItem("todos");
-    return saved ? JSON.parse(saved) : initialData;
+  const saved = localStorage.getItem("todos");
+
+  if (saved === null) return initialData;
+
+  const parsed: Todo[] = JSON.parse(saved);
+
+  return parsed.length > 0 ? parsed : initialData;
   });
 
   useEffect(() => {
@@ -67,19 +77,37 @@ function App() {
     setTodos((prev) => [newTodo, ...prev]);
   }, []);
 
+  const sortTodos = (todos: Todo[]): Todo[] => {
+    return [...todos].sort((a, b) => {
+      if (a.checked !== b.checked) {
+        return Number(a.checked) - Number(b.checked);
+      }
+
+      if (!a.checked) {
+        // Active: newest first
+        return b.created_at - a.created_at;
+      }
+
+      // Completed: oldest completion first
+      return a.completed_at! - b.completed_at!;
+    });
+  };
+
   const handleChecked = useCallback((checked: boolean, id: string) => {
     setTodos((prev) =>
-      prev.map((todo) =>
-        todo.id === id
-          ? { ...todo, checked, completed_at: checked ? Date.now() : null }
-          : todo,
+      sortTodos(
+        prev.map((todo) =>
+          todo.id === id
+            ? { ...todo, checked, completed_at: checked ? Date.now() : null }
+            : todo,
+        ),
       ),
     );
-
-    setTodos((prev) =>
-      [...prev].sort((a, b) => Number(a.checked) - Number(b.checked)),
-    );
   }, []);
+
+  const onDelete = (id: string) => {
+    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+  };
 
   return (
     <>
@@ -87,9 +115,18 @@ function App() {
       <Wrapper>
         <AddInput onAdd={addTodo} />
         <TodoList>
-          {todos.map((todo) => (
-            <TodoItem key={todo.id} {...todo} onChecked={handleChecked} />
-          ))}
+          {todos.length > 0 ? (
+            todos.map((todo) => (
+              <TodoItem
+                key={todo.id}
+                {...todo}
+                onChecked={handleChecked}
+                onDelete={onDelete}
+              />
+            ))
+          ) : (
+            <Text>no available todos </Text>
+          )}
         </TodoList>
       </Wrapper>
     </>
