@@ -1,31 +1,20 @@
-import styled from "styled-components";
-import Header from "./components/Header";
-import { AddInput } from "./components/AddInput";
-import { FilterTabs } from "./components/FilterTabs";
-import { TodoList } from "./components/TodoList";
-import { TodoStats } from "./components/TodoStats";
-import { TodoProvider } from "./context/TodoProvider";
-
-const Wrapper = styled.div({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  width: "100%",
-  boxSizing: "border-box",
-  padding: "24px",
-});
+import { Route, Routes } from "react-router";
+import { AppLayout } from "./layouts/AppLayout";
+import { HomePage } from "./pages/HomePage";
+import { TodosPage } from "./pages/TodosPage";
+import { UsersPage } from "./pages/UsersPage";
+import { NotFoundPage } from "./pages/NotFoundPage";
 
 function App() {
   return (
-    <TodoProvider>
-      <Header>Head Todo List</Header>
-      <Wrapper>
-        <AddInput />
-        <FilterTabs />
-        <TodoList />
-        <TodoStats />
-      </Wrapper>
-    </TodoProvider>
+    <Routes>
+      <Route element={<AppLayout />}>
+        <Route index element={<HomePage />} />
+        <Route path="todos" element={<TodosPage />} />
+        <Route path="users" element={<UsersPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
   );
 }
 
